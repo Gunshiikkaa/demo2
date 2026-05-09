@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kabir & Diksha | Wedding Invitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #9d2d58; /* Deep Rose/Pink */
+            --accent: #f8e1e7;
+            --bg-cream: #fffdf9;
+            --text-dark: #3a3a3a;
+            --gold: #c5a059;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .names {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* --- 3D CARD OPENING TRANSITION --- */
+        .card-opening-wrapper {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            perspective: 2000px; /* Depth for 3D effect */
+            pointer-events: none;
+            display: flex;
+            background: transparent;
+        }
+
+        .card-flap {
+            flex: 1;
+            background-color: white;
+            position: relative;
+            height: 100%;
+            transition: transform 2.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+            z-index: 2001;
+        }
+
+        /* Texture for the flaps to make it look like paper */
+        .card-flap::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+            background-image: url('https://www.transparenttextures.com/patterns/paper.png');
+            pointer-events: none;
+        }
+
+        .flap-left {
+            justify-content: flex-end;
+            transform-origin: left;
+            border-right: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .flap-right {
+            justify-content: flex-start;
+            transform-origin: right;
+            border-left: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Text centered across the split */
+        .card-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2005;
+            text-align: center;
+            width: 100vw;
+            transition: opacity 1s ease, transform 1.5s ease;
+            pointer-events: auto;
+        }
+
+        /* Opening logic */
+        body.loaded .flap-left {
+            transform: rotateY(-110deg);
+        }
+
+        body.loaded .flap-right {
+            transform: rotateY(110deg);
+        }
+
+        body.loaded .card-center-text {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.1);
+            pointer-events: none;
+        }
+
+        /* Decorative border on the flaps */
+        .flap-border {
+            position: absolute;
+            width: calc(50vw - 40px);
+            height: calc(100vh - 40px);
+            border: 2px solid var(--accent);
+            top: 20px;
+        }
+        .flap-left .flap-border { right: 20px; border-right: none; border-radius: 20px 0 0 20px; }
+        .flap-right .flap-border { left: 20px; border-left: none; border-radius: 0 20px 20px 0; }
+
+        /* Falling Flowers Animation */
+        .flower-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .flower {
+            position: absolute;
+            top: -50px;
+            font-size: 20px;
+            color: var(--primary);
+            opacity: 0.6;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            background: 
+                linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0.3)),
+                url('https://images.unsplash.com/photo-1549335223-c89505707f65?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .hero-top {
+            font-size: 1.2rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .hero-names {
+            font-size: 5rem;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .hero-names span {
+            font-size: 3rem;
+            display: block;
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* Scratch Section */
+        .reveal-container {
+            padding: 80px 20px;
+            background: white;
+            text-align: center;
+        }
+
+        .reveal-box {
+            position: relative;
+            width: 320px;
+            height: 180px;
+            margin: 40px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        #reveal-toggle { display: none; }
+
+        .reveal-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #f3d1d9 0%, #e09fba 100%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+            border: 2px solid white;
+        }
+
+        #reveal-toggle:checked ~ .reveal-box .reveal-overlay {
+            transform: translateX(105%);
+        }
+
+        .reveal-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-cream);
+        }
+
+        /* Countdown */
+        .countdown {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .count-item {
+            background: var(--accent);
+            padding: 10px;
+            border-radius: 8px;
+            min-width: 70px;
+        }
+
+        .count-num {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .count-label { font-size: 0.7rem; text-transform: uppercase; }
+
+        /* Events */
+        .section-title { text-align: center; margin: 60px 0 40px; font-size: 2.5rem; color: var(--primary); }
+        .events-grid { max-width: 1000px; margin: 0 auto 80px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 0 20px; }
+        .event-card { background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
+        .event-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.8rem; }
+        .event-card .date { font-weight: 600; color: var(--gold); margin-bottom: 5px; }
+
+        /* Family */
+        .family-grid { max-width: 800px; margin: 0 auto 100px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 0 20px; }
+        .family-card { background: var(--accent); padding: 30px; border-radius: 15px; text-align: center; }
+        .family-card h4 { color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid rgba(157, 45, 88, 0.2); padding-bottom: 10px; }
+
+        /* Footer */
+        .footer { padding: 60px 20px; text-align: center; background: linear-gradient(to top, var(--accent), transparent); }
+
+        @media (max-width: 768px) {
+            .hero-names { font-size: 3.5rem; }
+            .events-grid, .family-grid { grid-template-columns: 1fr; }
+            .hero-names span { font-size: 2rem; }
+            .card-flap { transition: transform 1.5s ease; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Card Opening Transition -->
+    <div class="card-opening-wrapper">
+        <div class="card-center-text">
+            <p class="hero-top">|| SHREE GANESHAYA NAMAH ||</p>
+            <h1 class="hero-names">Kabir <br><span>&</span><br> Diksha</h1>
+            <p style="margin-top: 20px; color: var(--gold); font-size: 0.8rem; letter-spacing: 2px;">INVITING YOU TO CELEBRATE</p>
+        </div>
+        <div class="card-flap flap-left">
+            <div class="flap-border"></div>
+        </div>
+        <div class="card-flap flap-right">
+            <div class="flap-border"></div>
+        </div>
+    </div>
+
+    <!-- Falling Flowers Generator -->
+    <div class="flower-container" id="flower-container"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-top">|| SHREE GANESHAYA NAMAH ||</div>
+        <h1 class="hero-names">Kabir <br><span>&</span><br> Diksha</h1>
+    </section>
+
+    <!-- Interactive Reveal Section -->
+    <section class="reveal-container">
+        <p>With immense joy and love</p>
+        <h2 style="margin: 10px 0;">Diksha & Kabir</h2>
+        
+        <input type="checkbox" id="reveal-toggle">
+        <label for="reveal-toggle" class="reveal-box">
+            <div class="reveal-overlay">
+                Tap to Reveal Details ✨
+            </div>
+            <div class="reveal-content">
+                <p class="cursive" style="font-size: 1.5rem; color: var(--primary);">Save the Date</p>
+                <h3 style="color: var(--gold);">JUNE 05, 2026</h3>
+                <p>Uttar Garden Lawn</p>
+            </div>
+        </label>
+
+        <div class="countdown">
+            <div class="count-item"><span class="count-num">--</span><span class="count-label">Days</span></div>
+            <div class="count-item"><span class="count-num">--</span><span class="count-label">Hours</span></div>
+            <div class="count-item"><span class="count-num">--</span><span class="count-label">Mins</span></div>
+            <div class="count-item"><span class="count-num">--</span><span class="count-label">Secs</span></div>
+        </div>
+    </section>
+
+    <!-- Events Grid -->
+    <h2 class="section-title">The Festivities</h2>
+    <section class="events-grid">
+        <div class="event-card">
+            <h3>Mehndi</h3>
+            <p class="date">WED, JUNE 3, 2026</p>
+            <p>03:30 PM onwards</p>
+            <p class="venue">Uttar Garden Lawn</p>
+            <p style="font-size: 0.8rem; color: var(--primary);">Dress Code: Vibrant Heritage</p>
+        </div>
+        <div class="event-card" style="background: #1a1a1a; color: white;">
+            <h3 style="color: #e09fba;">Sangeet</h3>
+            <p class="date" style="color: #c5a059;">WED, JUNE 4, 2026</p>
+            <p>07:30 PM onwards</p>
+            <p class="venue">Grand Ballroom</p>
+            <p style="font-size: 0.8rem; color: #e09fba;">Dress Code: Glitz & Glamour</p>
+        </div>
+        <div class="event-card">
+            <h3>Wedding</h3>
+            <p class="date">FRI, JUNE 5, 2026</p>
+            <p>07:00 PM onwards</p>
+            <p class="venue">Uttar Garden Lawn</p>
+            <p style="font-size: 0.8rem; color: var(--primary);">Dress Code: Traditional Ethnic</p>
+        </div>
+        <div class="event-card" style="background: var(--accent);">
+            <h3>Reception</h3>
+            <p class="date">SAT, JUNE 6, 2026</p>
+            <p>07:30 PM onwards</p>
+            <p class="venue">The Grand Atrium</p>
+            <p style="font-size: 0.8rem; color: var(--primary);">Dress Code: Formal Evening Wear</p>
+        </div>
+    </section>
+
+    <!-- Family Grid -->
+    <h2 class="section-title">The Families</h2>
+    <section class="family-grid">
+        <div class="family-card">
+            <h4>Groom's Family</h4>
+            <p>Mr. Pawan Agarwal</p>
+            <p>Mrs. Samita Agarwal</p>
+        </div>
+        <div class="family-card">
+            <h4>Bride's Family</h4>
+            <p>Shri Tarun Agarwal</p>
+            <p>Smt. Shikha Agarwal</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p class="cursive" style="font-size: 2rem;">Awaiting Your Noble Presence</p>
+        <p>Because meeting two souls requires twice the fun!</p>
+        <div class="hashtag" style="font-weight: 600; color: var(--gold); letter-spacing: 2px;">#KabirDikshaForever</div>
+    </footer>
+
+    <script>
+        // Trigger the card opening transition
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 1200); // Wait a moment so the user sees the card face
+        });
+
+        // Flower Generator
+        const container = document.getElementById('flower-container');
+        const flowerIcons = ['🌸', '🌺', '🌼', '🌷', '✨'];
+        
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.innerText = flowerIcons[Math.floor(Math.random() * flowerIcons.length)];
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.animationDuration = Math.random() * 3 + 4 + 's';
+            flower.style.opacity = Math.random();
+            container.appendChild(flower);
+            setTimeout(() => flower.remove(), 7000);
+        }
+        setInterval(createFlower, 400);
+
+        // Countdown Logic
+        function updateCountdown() {
+            const weddingDate = new Date('June 5, 2026 19:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const nums = document.querySelectorAll('.count-num');
+            if (nums.length === 4 && distance > 0) {
+                nums[0].innerText = days;
+                nums[1].innerText = hours.toString().padStart(2, '0');
+                nums[2].innerText = minutes.toString().padStart(2, '0');
+                nums[3].innerText = seconds.toString().padStart(2, '0');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
